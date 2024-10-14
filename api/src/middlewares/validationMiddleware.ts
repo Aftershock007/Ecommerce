@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express"
-import { responseWrapper } from "../util/responseWrapper"
+import { responseWrapper } from "../util/responseWrapper.js"
 import { z, ZodError } from "zod"
 import _ from "lodash"
 

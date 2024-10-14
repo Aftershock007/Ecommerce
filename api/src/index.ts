@@ -1,5 +1,6 @@
 import express, { json, urlencoded } from "express"
 import productRoutes from "./routes/products/index"
+import authRoutes from "./routes/auth/index"
 
 const port = 3000
 const app = express()
@@ -13,6 +14,7 @@ app.get("/", (req, res) => {
 })
 
 app.use("/products", productRoutes)
+app.use("/auth", authRoutes)
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`)
