@@ -5,7 +5,7 @@ import {
   getProductById,
   listProducts,
   updateProduct
-} from "./productController.js"
+} from "./productsController.js"
 import { validateData } from "../../middlewares/validationMiddleware.js"
 import {
   createProductSchema,
