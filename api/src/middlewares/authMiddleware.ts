@@ -10,8 +10,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET!)
     if (typeof decoded !== "object" || !decoded?.userId) {
-      responseWrapper(res, false, 401, "Access denied")
-      return
+      return responseWrapper(res, false, 401, "Access denied")
     }
     req.userId = decoded.userId
     req.role = decoded.role

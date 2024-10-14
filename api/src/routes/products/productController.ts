@@ -1,5 +1,5 @@
 import { Request, Response } from "express"
-import { db } from "../../db/index"
+import { db } from "../../db/index.js"
 import { productsTable } from "../../db/productsSchema.js"
 import { eq } from "drizzle-orm"
 import { responseWrapper } from "../../util/responseWrapper.js"
