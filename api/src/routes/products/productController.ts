@@ -40,7 +40,7 @@ export async function createProduct(req: Request, res: Response) {
   try {
     const [product] = await db
       .insert(productsTable)
-      .values(req.body)
+      .values(req.cleanBody)
       .returning()
     responseWrapper(res, true, 201, "Product created successfully", product)
   } catch (error) {
@@ -53,7 +53,7 @@ export async function updateProduct(req: Request, res: Response) {
     const id = Number(req.params.id)
     const [updatedProduct] = await db
       .update(productsTable)
-      .set(req.body)
+      .set(req.cleanBody)
       .where(eq(productsTable.id, id))
       .returning()
     if (updatedProduct) {
