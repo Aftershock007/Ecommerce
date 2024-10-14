@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1728889533107,
+      "tag": "0000_silky_hellfire_club",
+      "breakpoints": true
+    }
+  ]
+}
