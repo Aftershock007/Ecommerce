@@ -3,16 +3,33 @@ import authRoutes from "./routes/auth/index.js"
 import productsRoutes from "./routes/products/index.js"
 import ordersRoutes from "./routes/orders/index.js"
 import serverless from "serverless-http"
+import logger from "./logger.js"
+import morgan from "morgan"
 
 const port = 3000
 const app = express()
+const morganFormat = ":method :url :status :response-time ms"
 
-// middlewares: we can take json and urlencoded data by this
 app.use(json())
 app.use(urlencoded({ extended: false }))
+app.use(
+  morgan(morganFormat, {
+    stream: {
+      write: (message: any) => {
+        const logObject = {
+          method: message.split(" ")[0],
+          url: message.split(" ")[1],
+          status: message.split(" ")[2],
+          responseTime: message.split(" ")[3]
+        }
+        logger.info(JSON.stringify(logObject))
+      }
+    }
+  })
+)
 
 app.get("/", (_, res) => {
-  res.send("Hello World!")
+  res.send("Welcome to the Ecommerce APIs")
 })
 
 app.use("/auth", authRoutes)
