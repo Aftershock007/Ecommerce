@@ -9,7 +9,8 @@
     "build": "tsc",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "lint": "npx eslint src/**"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,7 @@
     "winston": "^3.15.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.12.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
@@ -36,7 +38,10 @@
     "@types/morgan": "^1.9.9",
     "@types/pg": "^8.11.10",
     "drizzle-kit": "^0.25.0",
+    "eslint": "^9.12.0",
+    "globals": "^15.11.0",
     "tsx": "^4.19.1",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "typescript-eslint": "^8.9.0"
   }
 }

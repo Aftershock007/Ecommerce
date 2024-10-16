@@ -15,7 +15,7 @@ app.use(urlencoded({ extended: false }))
 app.use(
   morgan(morganFormat, {
     stream: {
-      write: (message: any) => {
+      write: (message: string) => {
         const logObject = {
           method: message.split(" ")[0],
           url: message.split(" ")[1],

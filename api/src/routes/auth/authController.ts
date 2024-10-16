@@ -5,6 +5,7 @@ import { db } from "../../db/index.js"
 import { eq } from "drizzle-orm"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
+import logger from "../../logger.js"
 
 export async function registerUser(req: Request, res: Response) {
   try {
@@ -20,6 +21,7 @@ export async function registerUser(req: Request, res: Response) {
       userWithoutPassword
     )
   } catch (error) {
+    logger.info("Error creating user", error)
     responseWrapper(res, false, 500, "Error creating user")
   }
 }
@@ -42,11 +44,12 @@ export async function loginUser(req: Request, res: Response) {
       }
     )
     const { password: _, ...userWithoutPassword } = user
-    res.status(200).json({
+    responseWrapper(res, true, 200, "User logged in successfully", {
       token,
       user: userWithoutPassword
     })
   } catch (error) {
+    logger.info("Error logging in user", error)
     responseWrapper(res, false, 500, "Error logging in user")
   }
 }

@@ -3,7 +3,7 @@ export {}
 declare global {
   namespace Express {
     export interface Request {
-      userId?: Number
+      userId?: number
       cleanBody?: any
       role?: string
     }

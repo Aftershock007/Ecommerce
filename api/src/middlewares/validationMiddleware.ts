@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from "express"
 import { responseWrapper } from "../util/responseWrapper.js"
-import { z, ZodError } from "zod"
+import { ZodError, ZodObject, ZodRawShape } from "zod"
 import _ from "lodash"
 
-export function validateData(schema: z.ZodObject<any, any>) {
+export function validateData<T extends ZodRawShape>(schema: ZodObject<T>) {
   return (req: Request, res: Response, next: NextFunction) => {
     try {
       schema.parse(req.body)
@@ -11,7 +11,7 @@ export function validateData(schema: z.ZodObject<any, any>) {
       next()
     } catch (error) {
       if (error instanceof ZodError) {
-        const errorMessages = error.errors.map((issue: any) => ({
+        const errorMessages = error.errors.map((issue) => ({
           message: issue.message
         }))
         responseWrapper(res, false, 400, "Invalid data", errorMessages)

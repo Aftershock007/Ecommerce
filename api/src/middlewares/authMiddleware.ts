@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express"
 import { responseWrapper } from "../util/responseWrapper.js"
 import jwt from "jsonwebtoken"
+import logger from "../logger.js"
 
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
   const token = req.header("Authorization")
@@ -16,6 +17,7 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     req.role = decoded.role
     next()
   } catch (error) {
+    logger.error(error)
     responseWrapper(res, false, 401, "Access denied")
   }
 }

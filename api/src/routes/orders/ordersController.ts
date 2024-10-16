@@ -3,10 +3,12 @@ import { responseWrapper } from "../../util/responseWrapper.js"
 import { db } from "../../db/index.js"
 import { orderItemsTable, ordersTable } from "../../db/ordersSchema.js"
 import { eq } from "drizzle-orm"
+import { productsTable } from "../../db/productsSchema.js"
+import logger from "../../logger.js"
 
 export async function createOrder(req: Request, res: Response) {
   try {
-    const { order, items } = req.cleanBody
+    const { _, items } = req.cleanBody
     const userId = req.userId
     if (!userId) {
       responseWrapper(res, false, 400, "Invalid order data")
@@ -15,7 +17,6 @@ export async function createOrder(req: Request, res: Response) {
       .insert(ordersTable)
       .values({ userId: Number(userId) })
       .returning()
-    // TODO: validate products ids and take their actual price from db
     const orderItems = items.map((item: any) => ({
       ...item,
       orderId: newOrder.id
@@ -24,9 +25,45 @@ export async function createOrder(req: Request, res: Response) {
       .insert(orderItemsTable)
       .values(orderItems)
       .returning()
-    res.status(201).json({ ...newOrder, items: newOrderItems })
+    for (const oitem of newOrderItems) {
+      const [product] = await db
+        .select()
+        .from(productsTable)
+        .where(eq(productsTable.id, oitem.productId))
+      if (
+        oitem.price <= 0 ||
+        oitem.price !== product.price ||
+        oitem.quantity <= 0
+      ) {
+        return responseWrapper(res, false, 400, "Invalid order data")
+      }
+      if (oitem.quantity > product.quantity) {
+        return responseWrapper(
+          res,
+          false,
+          400,
+          "Insufficient product quantity available"
+        )
+      }
+      const updatedQuantity = product.quantity - oitem.quantity
+      const [updatedProduct] = await db
+        .update(productsTable)
+        .set({
+          quantity: updatedQuantity
+        })
+        .where(eq(productsTable.id, oitem.productId))
+        .returning()
+      if (!updatedProduct) {
+        return responseWrapper(res, false, 400, "Invalid order data")
+      }
+    }
+    responseWrapper(res, true, 201, "Order created successfully", {
+      ...newOrder,
+      items: newOrderItems
+    })
   } catch (error) {
-    responseWrapper(res, false, 500, "Error fetching orders")
+    logger.info("Error creating order", error)
+    responseWrapper(res, false, 500, "Error creating order")
   }
 }
 
@@ -36,6 +73,7 @@ export async function listOrders(req: Request, res: Response) {
     const orders = await db.select().from(ordersTable)
     responseWrapper(res, true, 200, "Orders fetched successfully", orders)
   } catch (error) {
+    logger.info("Error fetching orders", error)
     responseWrapper(res, false, 500, "Error fetching orders")
   }
 }
@@ -64,6 +102,7 @@ export async function getOrderById(req: Request, res: Response) {
     }
     responseWrapper(res, true, 200, "Order fetched successfully", mergedOrder)
   } catch (error) {
+    logger.info("Error fetching order", error)
     responseWrapper(res, false, 500, "Error fetching order")
   }
 }
@@ -88,6 +127,7 @@ export async function updateOrder(req: Request, res: Response) {
       )
     }
   } catch (error) {
+    logger.info("Error updating order", error)
     responseWrapper(res, false, 500, "Error updating order")
   }
 }
