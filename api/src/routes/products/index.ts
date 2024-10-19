@@ -3,7 +3,7 @@ import {
   createProduct,
   deleteProduct,
   getProductById,
-  listProducts,
+  getProducts,
   updateProduct
 } from "./productsController.js"
 import { validateData } from "../../middlewares/validationMiddleware.js"
@@ -15,7 +15,7 @@ import { verifySeller, verifyToken } from "../../middlewares/authMiddleware.js"
 
 const router = Router()
 
-router.get("/", listProducts)
+router.get("/", getProducts)
 router.get("/:id", getProductById)
 router.post(
   "/",

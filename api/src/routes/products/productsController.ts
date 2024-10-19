@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm"
 import { responseWrapper } from "../../util/responseWrapper.js"
 import logger from "../../logger.js"
 
-export async function listProducts(req: Request, res: Response) {
+export async function getProducts(req: Request, res: Response) {
   try {
     const products = await db.select().from(productsTable)
     responseWrapper(res, true, 200, "Products fetched successfully", products)
