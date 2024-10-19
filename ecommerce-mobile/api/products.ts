@@ -6,7 +6,7 @@ export async function getProducts() {
   if (!res.ok) {
     throw new Error("Error fetching products")
   }
-  return productData.data
+  return productData.data.sort((a, b) => a.id - b.id)
 }
 
 export async function getProductById(id: number) {

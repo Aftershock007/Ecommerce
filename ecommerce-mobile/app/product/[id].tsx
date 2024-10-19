@@ -10,21 +10,12 @@ import { useQuery } from "@tanstack/react-query"
 import { getProductById } from "@/api/products"
 import { ActivityIndicator } from "react-native"
 import { useCart } from "@/store/cartStore"
-import { Alert, AlertIcon, AlertText } from "@/components/ui/alert"
-
-function AlertBox() {
-  return (
-    <Alert action="warning" variant="solid">
-      <AlertIcon />
-      <AlertText>Description of alert!</AlertText>
-    </Alert>
-  )
-}
+import { HStack } from "@/components/ui/hstack"
 
 export default function details() {
   const { id } = useLocalSearchParams<{ id: string }>()
   const addProduct = useCart((state) => state.addProducts)
-  const cartItems = useCart((state) => state.items)
+  const items = useCart((state) => state.items)
 
   const {
     data: product,
@@ -34,11 +25,24 @@ export default function details() {
     queryKey: ["products", id],
     queryFn: () => getProductById(Number(id))
   })
-
-  function addToCart() {
-    addProduct(product)
+  const cartItem = useCart
+    .getState()
+    .items.find((item) => item.product.id === product?.id)
+  const cartQuantity = cartItem ? cartItem.quantity : 0
+  const isOutOfStock =
+    product?.quantity === 0 || cartQuantity >= product?.quantity
+  async function addToCart() {
+    if (!isOutOfStock) {
+      await addProduct(product, 1)
+    } else {
+      console.log("Cannot add more items than available stock")
+    }
   }
-
+  async function removeFromCart() {
+    if (cartQuantity > 0) {
+      await addProduct(product, -1)
+    }
+  }
   if (isLoading) {
     return <ActivityIndicator />
   }
@@ -54,31 +58,43 @@ export default function details() {
           source={{
             uri: product.image
           }}
-          className="mb-6 h-[240px] w-full rounded-md"
+          className="mb-6 h-[300px] w-full rounded-md"
           alt={`${product.name} image`}
           resizeMode="contain"
         />
-        <Text className="text-sm font-normal mb-2 text-typography-700">
+        <Text className="text-sm font-normal text-typography-700">
           {product.name}
         </Text>
         <VStack className="mb-6">
-          <Heading size="md" className="mb-4">
-            ${product.price}
-          </Heading>
+          <HStack className="justify-between items-center">
+            <Heading size="md" className="mb-3">
+              ${product.price}
+            </Heading>
+            <Heading
+              size="md"
+              className="mb-3 border-2 border-outline-200 px-2 rounded-xl">
+              {product.quantity}
+            </Heading>
+          </HStack>
           <Text size="sm">{product.description}</Text>
         </VStack>
         <Box className="flex-col sm:flex-row">
           <Button
             onPress={addToCart}
-            className="px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1">
-            <ButtonText size="sm">Add to cart</ButtonText>
+            className="px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1"
+            disabled={isOutOfStock}
+            style={{ opacity: isOutOfStock ? 0.5 : 1 }}>
+            <ButtonText size="sm">
+              {isOutOfStock ? "Out of stock" : "Add to cart"}
+            </ButtonText>
           </Button>
           <Button
-            variant="outline"
-            className="px-4 py-2 border-outline-300 sm:flex-1">
-            <ButtonText size="sm" className="text-typography-600">
-              Wishlist
-            </ButtonText>
+            action="negative"
+            onPress={removeFromCart}
+            disabled={cartQuantity === 0}
+            style={{ opacity: cartQuantity === 0 ? 0.5 : 1 }}
+            className="px-4 py-2 mr-0 mb-3 sm:mr-3 sm:mb-0 sm:flex-1">
+            <ButtonText size="sm">Remove</ButtonText>
           </Button>
         </Box>
       </Card>

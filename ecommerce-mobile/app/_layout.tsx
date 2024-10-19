@@ -12,8 +12,8 @@ import { useAuth } from "@/store/authStore"
 const queryClient = new QueryClient()
 
 export default function RootLayout() {
-  const cartItemsNum = useCart((state) => state.items.length)
   const isLoggedIn = useAuth((state) => !!state.token)
+  const cartItemsNum = useCart((state) => state.totalQuantity)
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -23,9 +23,9 @@ export default function RootLayout() {
             headerRight: () =>
               cartItemsNum > 0 && (
                 <Link href="/cart" asChild>
-                  <Pressable className="flex-row gap-2">
+                  <Pressable className="flex-row gap-1 items-center">
                     <Icon as={ShoppingCart} />
-                    <Text>{cartItemsNum}</Text>
+                    <Text className="text-lg">{cartItemsNum}</Text>
                   </Pressable>
                 </Link>
               )
