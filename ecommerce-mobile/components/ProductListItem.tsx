@@ -1,5 +1,5 @@
 import { Text } from "react-native"
 
-export default function ProductListItem({ product }) {
-  return <Text style={{ fontSize: 30 }}>{product.name}</Text>
+export default function ProductListItem({ product }: any) {
+  return <Text style={{ fontSize: 20 }}>{product.name}</Text>
 }
