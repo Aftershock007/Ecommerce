@@ -4,7 +4,6 @@ import { Heading } from "@/components/ui/heading"
 import { Text } from "@/components/ui/text"
 import { Pressable } from "react-native"
 import { Link } from "expo-router"
-import { HStack } from "./ui/hstack"
 
 export default function ProductListItem({ product }) {
   return (
